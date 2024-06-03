@@ -88,6 +88,14 @@
   </main>
 
   <script>
+    // Custom Error class
+    class NonNumericInputError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = 'NonNumericInputError';
+      }
+    }
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -97,6 +105,9 @@
       let operator = document.querySelector('#operator').value;
       // step 3
       try{
+        if (isNaN(firstNum) || isNaN(secondNum)) {
+          throw new NonNumericInputError('Both inputs must be numeric');
+        }
         if((secondNum === '0') && (operator === '/')){
           throw new Error('division by 0 not possible');
         }
@@ -172,10 +183,34 @@
             }
             one();
             break;
+            case 'Trigger a Global Error':
+            // Step 5
+            nonExistentFunction();
+            break;
         }
       })
     })
+     // Step 5 - Global Error Handler
+     window.onerror = function (message, source, lineno, colno, error) {
+      console.log("An Error was thrown")
+
+      // If TrackJS is included and configured correctly
+      if (window.TrackJS) {
+        TrackJS.track(message);
+      }
+
+      // Prevent the default browser error handling
+      return true;
+    };
   </script>
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "33020a7ec7ae46f78bc856abc22ce8a4"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+                          
 </body>
 
 </html>
